@@ -1,49 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Scanner</title>
-  <style>
-    body {
-      background: #111;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
-    #reader {
-      width: 300px;
-      height: 300px;
-      border: 2px solid #00d4ff;
-      border-radius: 8px;
-    }
-    #result {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      color: #00d4ff;
-    }
-  </style>
-</head>
-<body>
-  <h2>Scan QR Code</h2>
-  <div id="reader"></div>
-  <div id="result">Waiting for scan...</div>
+<script>
+function onScanSuccess(decodedText, decodedResult) {
+  console.log(`Code matched = ${decodedText}`);
 
-  <!-- QR Scanner library -->
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script>
-    function onScanSuccess(decodedText) {
-      document.getElementById("result").innerText = "✅ " + decodedText;
-    }
-    function onScanError(errorMessage) {
-      console.log(errorMessage);
-    }
-    let html5QrcodeScanner = new Html5QrcodeScanner(
-      "reader", { fps: 10, qrbox: 250 });
-    html5QrcodeScanner.render(onScanSuccess, onScanError);
-  </script>
-</body>
-</html>
+  // Call your Wix backend
+  fetch("https://www.vibezone.be/_functions/processCheckIn", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ token: decodedText })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message || "Check-in processed!");
+  })
+  .catch(err => {
+    alert("Error: " + err.message);
+  });
+}
+</script>
+
