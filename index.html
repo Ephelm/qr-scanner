@@ -1,12 +1,36 @@
-fetch("https://www.vibezone.be/_functions/processCheckIn", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ token: decodedText })
-})
-.then(res => res.json())
-.then(data => {
-  alert(data.message || "Check-in processed!");
-})
-.catch(err => {
-  alert("Error: " + err.message);
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibezone Check-In</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h2>Vibezone QR Check-In</h2>
+  <div id="reader" style="width:300px"></div>
+
+  <script>
+  function onScanSuccess(decodedText, decodedResult) {
+    console.log(`Code matched = ${decodedText}`);
+
+    fetch("https://www.vibezone.be/_functions/processCheckIn", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: decodedText })
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Check-in processed!");
+    })
+    .catch(err => {
+      alert("Error: " + err.message);
+    });
+  }
+
+  var html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader", { fps: 10, qrbox: 250 });
+  html5QrcodeScanner.render(onScanSuccess);
+  </script>
+</body>
+</html>
